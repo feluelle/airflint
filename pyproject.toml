@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "airflint"
-version = "0.1.0"
+version = "0.1.0-alpha"
 description = "Enforce Best Practices for all your Airflow DAGs. ⭐"
 authors = ["Felix Uellendall <feluelle@pm.me>"]
 license = "Apache-2.0"
