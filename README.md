@@ -1,6 +1,6 @@
 # airflint
 
-> A linter for your Airflow DAGs to ensure Best Practices are being used.
+> Enforce Best Practices for all your Airflow DAGs. ⭐
 
 ## 🧑‍🏫 Rules
 
