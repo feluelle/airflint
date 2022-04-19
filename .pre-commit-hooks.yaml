@@ -1,0 +1,6 @@
+- id: airflint
+  name: Airflint
+  description: A linter for your Airflow DAGs to ensure Best Practices are being used.
+  entry: airflint
+  language: python
+  types: [python]

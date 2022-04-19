@@ -1,0 +1,4 @@
+assert_used:
+  skips:
+  - 'airflint/rules/*.py'
+  - 'tests/*.py'
