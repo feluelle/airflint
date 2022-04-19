@@ -31,3 +31,19 @@ To install it from [PyPI](https://pypi.org/) run:
 ```console
 pip install airflint
 ```
+
+Then just call it like this:
+
+![usage](assets/images/usage.png)
+
+### pre-commit
+
+Alternatively you can add the following repo to your `pre-commit-config.yaml`:
+
+```yaml
+  - repo: https://github.com/feluelle/airflint
+    rev: v0.1.1-alpha
+    hooks:
+      - id: airflint
+        args: ["-a"]  # Use -a for replacing inplace
+```
