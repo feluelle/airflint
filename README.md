@@ -29,5 +29,5 @@
 To install it from [PyPI](https://pypi.org/) run:
 
 ```console
-pip install airflow-diagrams
+pip install airflint
 ```
