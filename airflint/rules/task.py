@@ -70,7 +70,7 @@ class _AddTaskDecorator(Rule):
                 keywords=[
                     keyword
                     for keyword in python_operator.keywords
-                    if keyword.arg != "python_callable"
+                    if keyword.arg not in ["python_callable", "op_args", "op_kwargs"]
                 ],
             ),
         )
@@ -81,20 +81,38 @@ class _ReplacePythonOperatorByFunctionCall(Rule):
     """Replace PythonOperator calls by function calls which got decorated with the @task decorator."""
 
     def match(self, node):
-        assert isinstance(node, ast.Expr)
+        assert isinstance(node, (ast.Expr, ast.Assign))
         assert isinstance(node.value, ast.Call)
         assert isinstance(node.value.func, ast.Name)
         assert node.value.func.id in ["PythonOperator", "PythonVirtualenvOperator"]
         assert isinstance(node.value.func.ctx, ast.Load)
 
-        replacement = ast.Call(
+        replacement = deepcopy(node)
+
+        args = next(
+            (
+                keyword.value.elts
+                for keyword in node.value.keywords
+                if keyword.arg == "op_args"
+            ),
+            None,
+        )
+        kwargs = next(
+            (
+                keyword.value.keywords
+                for keyword in node.value.keywords
+                if keyword.arg == "op_kwargs"
+            ),
+            None,
+        )
+        replacement.value = ast.Call(
             func=next(
                 keyword.value
                 for keyword in node.value.keywords
                 if keyword.arg == "python_callable"
             ),
-            args=[],
-            keywords=[],
+            args=[args] if args else [],
+            keywords=[kwargs] if kwargs else [],
         )
         return ReplacementAction(node, replacement)
 

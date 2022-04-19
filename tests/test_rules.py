@@ -88,6 +88,48 @@ from airflint.rules import dag, task, variable
             """,
         ),
         (
+            task.EnforceTaskFlowApi,
+            """
+            from airflow.operators.python import PythonOperator
+
+            def foo():
+                pass
+
+            task_foo = PythonOperator(task_id="foo", python_callable=foo)
+            """,
+            """
+            from airflow.operators.python import PythonOperator
+            from airflow.decorators import task
+
+            @task(task_id="foo")
+            def foo():
+                pass
+
+            task_foo = foo()
+            """,
+        ),
+        (
+            task.EnforceTaskFlowApi,
+            """
+            from airflow.operators.python import PythonOperator
+
+            def foo(fizz, bar):
+                pass
+
+            task_foo = PythonOperator(task_id="foo", python_callable=foo, op_kwargs=dict(bar="bar"), op_args=["fizz"])
+            """,
+            """
+            from airflow.operators.python import PythonOperator
+            from airflow.decorators import task
+
+            @task(task_id="foo")
+            def foo(fizz, bar):
+                pass
+
+            task_foo = foo("fizz", bar="bar")
+            """,
+        ),
+        (
             [variable.ReplaceVariableGetByJinja],
             """
             from airflow.models import Variable
