@@ -1,9 +1,11 @@
 [tool.poetry]
 name = "airflint"
 version = "0.1.0"
-description = "A linter for your Airflow DAGs to ensure Best Practices are being used."
+description = "Enforce Best Practices for all your Airflow DAGs. ⭐"
 authors = ["Felix Uellendall <feluelle@pm.me>"]
 license = "Apache-2.0"
+keywords = ["airflow", "best-practices", "dag"]
+readme = "README.md"
 
 [tool.poetry.scripts]
 airflint = "airflint.__main__:main"
