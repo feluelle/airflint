@@ -22,4 +22,12 @@
 
 ## 💡 Future Ideas
 
-- create refactorings for Airflow `DeprecationWarning`s
+- fix Official Airflow `DeprecationWarning`s
+
+## 🚀 Get started
+
+To install it from [PyPI](https://pypi.org/) run:
+
+```console
+pip install airflow-diagrams
+```
