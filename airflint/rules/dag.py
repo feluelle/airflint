@@ -42,18 +42,22 @@ class _ReplaceDagContextManagerByDagDecorator(Rule):
                 None,
             )
         )
+        assert (
+            dag_id := next(
+                (
+                    keyword.value.value
+                    for keyword in DAG.keywords
+                    if keyword.arg == "dag_id"
+                    and isinstance(keyword.value, ast.Constant)
+                ),
+                "",
+            )
+        )
 
         return ReplacementAction(
             node,
             target=ast.FunctionDef(
-                name=toidentifier(
-                    next(
-                        keyword.value.value
-                        for keyword in DAG.keywords
-                        if keyword.arg == "dag_id"
-                        and isinstance(keyword.value, ast.Constant)
-                    ),
-                ),
+                name=toidentifier(dag_id),
                 args=ast.arguments(
                     posonlyargs=[],
                     args=[],
