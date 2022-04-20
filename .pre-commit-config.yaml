@@ -45,11 +45,6 @@ repos:
     rev: v1.3.0
     hooks:
       - id: yesqa
-  - repo: https://github.com/asottile/dead
-    rev: v1.4.0
-    hooks:
-      - id: dead
-        args: ["--exclude", "airflint/rules/|airflint/utils.py"]
   - repo: https://github.com/psf/black
     rev: 22.3.0
     hooks:

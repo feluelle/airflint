@@ -1,9 +1,12 @@
 import textwrap
 
+import pendulum
 import pytest
 from refactor import Session
 
 from airflint.rules import dag, task, variable
+
+yesterday = pendulum.today(tz=pendulum.UTC).subtract(days=1)
 
 
 @pytest.mark.parametrize(
@@ -36,12 +39,12 @@ from airflint.rules import dag, task, variable
             with DAG(dag_id="foo", start_date=days_ago(1), schedule_interval="@daily") as dag:
                 pass
             """,
-            """
+            f"""
             from airflow import DAG
             from airflow.utils.dates import days_ago
             from pendulum import datetime
 
-            with DAG(dag_id="foo", start_date=datetime(2022, 4, 18), schedule_interval="@daily") as dag:
+            with DAG(dag_id="foo", start_date=datetime({yesterday.year}, {yesterday.month}, {yesterday.day}), schedule_interval="@daily") as dag:
                 pass
             """,
         ),
