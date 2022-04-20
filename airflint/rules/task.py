@@ -104,9 +104,21 @@ class _ReplacePythonOperatorByFunctionCall(Rule):
             (
                 keyword.value.keywords
                 for keyword in node.value.keywords
-                if keyword.arg == "op_kwargs"
+                if keyword.arg == "op_kwargs" and isinstance(keyword.value, ast.Call)
             ),
-            None,
+            next(
+                (
+                    [
+                        ast.keyword(arg=key.value, value=value)
+                        for key, value in zip(keyword.value.keys, keyword.value.values)
+                        if isinstance(key, ast.Constant)
+                    ]
+                    for keyword in node.value.keywords
+                    if keyword.arg == "op_kwargs"
+                    and isinstance(keyword.value, ast.Dict)
+                ),
+                None,
+            ),
         )
         replacement = deepcopy(node)
         replacement.value = ast.Call(

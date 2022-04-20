@@ -133,6 +133,27 @@ yesterday = pendulum.today(tz=pendulum.UTC).subtract(days=1)
             """,
         ),
         (
+            task.EnforceTaskFlowApi,
+            """
+            from airflow.operators.python import PythonOperator
+
+            def foo(fizz, bar):
+                pass
+
+            task_foo = PythonOperator(task_id="foo", python_callable=foo, op_kwargs={"bar":"bar"}, op_args=["fizz"])
+            """,
+            """
+            from airflow.operators.python import PythonOperator
+            from airflow.decorators import task
+
+            @task(task_id="foo")
+            def foo(fizz, bar):
+                pass
+
+            task_foo = foo("fizz", bar="bar")
+            """,
+        ),
+        (
             [variable.ReplaceVariableGetByJinja],
             """
             from airflow.models import Variable
