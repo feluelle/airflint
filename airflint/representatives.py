@@ -42,3 +42,40 @@ class PythonCallableFinder(Representative):
             ),
             None,
         )
+
+
+class DecoratorFinder(Representative):
+    """Find decorator with the given name."""
+
+    def collect(self, name: str, scope: ScopeInfo) -> Optional[ast.FunctionDef]:
+        return next(
+            (
+                node
+                for node in ast.walk(self.context.tree)
+                if isinstance(node, ast.FunctionDef)
+                and any(
+                    isinstance(decorator, ast.Call)
+                    and isinstance(decorator.func, ast.Name)
+                    and decorator.func.id == name
+                    for decorator in node.decorator_list
+                )
+                and scope.can_reach(self.context["scope"].resolve(node))
+            ),
+            None,
+        )
+
+
+class NameFinder(Representative):
+    """Find decorator with the given name."""
+
+    def collect(self, name: str, scope: ScopeInfo) -> Optional[ast.Name]:
+        return next(
+            (
+                node
+                for node in ast.walk(self.context.tree)
+                if isinstance(node, ast.Name)
+                and node.id == name
+                and scope.can_reach(self.context["scope"].resolve(node))
+            ),
+            None,
+        )

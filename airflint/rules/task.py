@@ -5,15 +5,17 @@ from refactor import ReplacementAction, Rule
 from refactor.context import Scope
 
 from airflint.actions import AddNewImport
-from airflint.representatives import ImportFinder, PythonCallableFinder
+from airflint.representatives import ImportFinder, NameFinder, PythonCallableFinder
 
 
 class _AddTaskDecoratorImport(Rule):
     """Add import for @task decorator."""
 
-    context_providers = (Scope, ImportFinder)
+    context_providers = (Scope, NameFinder, ImportFinder)
 
     def match(self, node):
+        node_scope = self.context["scope"].resolve(node)
+        assert not self.context["name_finder"].collect("task", scope=node_scope)
         assert (
             isinstance(node, ast.ImportFrom)
             and node.module == "airflow.operators.python"
@@ -22,10 +24,7 @@ class _AddTaskDecoratorImport(Rule):
                 for alias in node.names
             )
         )
-        assert not self.context["import_finder"].collect(
-            "task",
-            scope=self.context["scope"].resolve(node),
-        )
+        assert not self.context["import_finder"].collect("task", scope=node_scope)
 
         return AddNewImport(node, module="airflow.decorators", names=["task"])
 
@@ -33,9 +32,11 @@ class _AddTaskDecoratorImport(Rule):
 class _AddTaskDecorator(Rule):
     """Add @task decorator for python functions to transform them into airflow tasks."""
 
-    context_providers = (Scope, PythonCallableFinder)
+    context_providers = (Scope, ImportFinder, PythonCallableFinder)
 
     def match(self, node):
+        node_scope = self.context["scope"].resolve(node)
+        assert self.context["import_finder"].collect("task", scope=node_scope)
         assert isinstance(node, ast.FunctionDef)
         assert not any(
             decorator.func.id == "task"
@@ -51,7 +52,7 @@ class _AddTaskDecorator(Rule):
         assert (
             python_operator := self.context["python_callable_finder"].collect(
                 node.name,
-                scope=self.context["scope"].resolve(node),
+                scope=node_scope,
             )
         )
         assert isinstance(python_operator.func, ast.Name)
@@ -83,7 +84,11 @@ class _AddTaskDecorator(Rule):
 class _ReplacePythonOperatorByFunctionCall(Rule):
     """Replace PythonOperator calls by function calls which got decorated with the @task decorator."""
 
+    context_providers = (Scope, ImportFinder)
+
     def match(self, node):
+        node_scope = self.context["scope"].resolve(node)
+        assert self.context["import_finder"].collect("task", scope=node_scope)
         assert (
             isinstance(node, (ast.Expr, ast.Assign))
             and isinstance(node.value, ast.Call)

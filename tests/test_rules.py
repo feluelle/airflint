@@ -31,6 +31,19 @@ yesterday = pendulum.today(tz=pendulum.UTC).subtract(days=1)
             """,
         ),
         (
+            dag.EnforceTaskFlowApi,
+            """
+            from airflow import DAG
+
+            dag = DAG(dag_id="foo")
+            """,
+            """
+            from airflow import DAG
+
+            dag = DAG(dag_id="foo")
+            """,
+        ),
+        (
             dag.EnforceStaticStartDate,
             """
             from airflow import DAG
@@ -67,6 +80,25 @@ yesterday = pendulum.today(tz=pendulum.UTC).subtract(days=1)
                 pass
 
             foo()
+            """,
+        ),
+        (
+            task.EnforceTaskFlowApi,
+            """
+            from airflow.operators.python import PythonOperator
+
+            def foo():
+                pass
+
+            task = PythonOperator(task_id="foo", python_callable=foo)
+            """,
+            """
+            from airflow.operators.python import PythonOperator
+
+            def foo():
+                pass
+
+            task = PythonOperator(task_id="foo", python_callable=foo)
             """,
         ),
         (

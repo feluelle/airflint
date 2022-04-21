@@ -5,12 +5,12 @@ from refactor import ReplacementAction, Rule
 from refactor.context import Ancestry, Scope
 
 from airflint.actions import AddNewCall, AddNewImport
-from airflint.representatives import ImportFinder
+from airflint.representatives import DecoratorFinder, ImportFinder
 from airflint.utils import toidentifier
 
 
 class _AddDagDecoratorImport(Rule):
-    context_providers = (Scope, ImportFinder)
+    context_providers = (Scope, DecoratorFinder, ImportFinder)
 
     def match(self, node: ast.AST) -> AddNewImport:
         assert (
@@ -18,10 +18,9 @@ class _AddDagDecoratorImport(Rule):
             and node.module == "airflow"
             and any(alias.name == "DAG" for alias in node.names)
         )
-        assert not self.context["import_finder"].collect(
-            "dag",
-            scope=self.context["scope"].resolve(node),
-        )
+        node_scope = self.context["scope"].resolve(node)
+        assert self.context["decorator_finder"].collect("dag", scope=node_scope)
+        assert not self.context["import_finder"].collect("dag", scope=node_scope)
 
         return AddNewImport(node, module="airflow.decorators", names=["dag"])
 
@@ -98,8 +97,8 @@ class _AddDagCall(Rule):
 
 
 EnforceTaskFlowApi = [
-    _AddDagDecoratorImport,
     _ReplaceDagContextManagerByDagDecorator,
+    _AddDagDecoratorImport,
     _AddDagCall,
 ]
 
