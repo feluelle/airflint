@@ -95,6 +95,10 @@ class _ReplacePythonOperatorByFunctionCall(Rule):
             and isinstance(node.value.func, ast.Name)
             and node.value.func.id in ["PythonOperator", "PythonVirtualenvOperator"]
             and isinstance(node.value.func.ctx, ast.Load)
+            and any(
+                keyword.arg == "python_callable" and isinstance(keyword.value, ast.Name)
+                for keyword in node.value.keywords
+            )
         )
 
         args = next(

@@ -104,6 +104,20 @@ yesterday = pendulum.today(tz=pendulum.UTC).subtract(days=1)
         (
             task.EnforceTaskFlowApi,
             """
+            from airflow.operators.python import PythonOperator
+
+            PythonOperator(task_id="foo", python_callable=lambda: "foo")
+            """,
+            """
+            from airflow.operators.python import PythonOperator
+            from airflow.decorators import task
+
+            PythonOperator(task_id="foo", python_callable=lambda: "foo")
+            """,
+        ),
+        (
+            task.EnforceTaskFlowApi,
+            """
             from airflow.operators.python import PythonVirtualenvOperator
 
             def foo():
