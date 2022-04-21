@@ -69,7 +69,9 @@ class _ReplaceDagContextManagerByDagDecorator(Rule):
                     ast.Call(
                         func=ast.Name(id="dag", ctx=ast.Load()),
                         args=[],
-                        keywords=DAG.keywords,
+                        keywords=[
+                            keyword for keyword in DAG.keywords if keyword.arg != "dag"
+                        ],
                     ),
                 ],
                 lineno=node.lineno,
