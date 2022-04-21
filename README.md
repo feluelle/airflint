@@ -20,6 +20,8 @@
 
 > ⚠️ airflint does not remove imports. For removing unused imports please use [autoflake](https://github.com/PyCQA/autoflake) additionally.
 
+Please check the [known issues](KNOWN_ISSUES.md) first, in case you find any bugs. If you cannot find them there, please open an Issue.
+
 ## 💡 Future Ideas
 
 - fix Official Airflow `DeprecationWarning`s
