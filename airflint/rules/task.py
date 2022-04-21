@@ -55,6 +55,11 @@ class _AddTaskDecorator(Rule):
                 scope=node_scope,
             )
         )
+        assert all(
+            isinstance(keyword.value, ast.Constant)
+            for keyword in python_operator.keywords
+            if keyword.arg not in ["python_callable", "op_args", "op_kwargs"]
+        )
         assert isinstance(python_operator.func, ast.Name)
         TASK_MAPPING = {
             "PythonOperator": ast.Name(id="task", ctx=ast.Load()),
@@ -99,6 +104,11 @@ class _ReplacePythonOperatorByFunctionCall(Rule):
                 keyword.arg == "python_callable" and isinstance(keyword.value, ast.Name)
                 for keyword in node.value.keywords
             )
+        )
+        assert all(
+            isinstance(keyword.value, ast.Constant)
+            for keyword in node.value.keywords
+            if keyword.arg not in ["python_callable", "op_args", "op_kwargs"]
         )
 
         args = next(

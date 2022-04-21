@@ -34,8 +34,12 @@ class ReplaceVariableGetByJinja(Rule):
                 )
             )
             and import_node.module
-            and (file_path := importlib.import_module(import_node.module).__file__)
         )
+        try:
+            _module = importlib.import_module(import_node.module)
+        except ImportError:
+            pass
+        assert _module and (file_path := _module.__file__)
         with open(file_path) as file:
             module = ast.parse(file.read())
         assert any(
