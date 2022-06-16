@@ -13,18 +13,12 @@
 
 ## 🧑‍🏫 Rules
 
-- [x] use datetime instead of days_ago in DAG start_date
-- [x] task decorator instead of PythonOperator and PythonVenvOperator
-- [x] dag decorator instead of DAG
-- [x] jinja string instead of Variable.get
+- [x] Use function-level imports instead of top-level imports[^1] (see [Top level Python Code](https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html#top-level-python-code))
+- [x] Use jinja macro instead of `Variable.get` (see [Airflow Variables](https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html#airflow-variables))
 
-> ⚠️ airflint does not remove imports. For removing unused imports please use [autoflake](https://github.com/PyCQA/autoflake) additionally.
+[^1]: There is a PEP for [Lazy Imports](https://peps.python.org/pep-0690/) targeted to arrive in Python 3.12 which would supersede this rule.
 
-Please check the [known issues](KNOWN_ISSUES.md) first, in case you find any bugs. If you cannot find them there, please open an Issue.
-
-## 💡 Future Ideas
-
-- fix Official Airflow `DeprecationWarning`s
+_based on official [Best Practices](https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html)_
 
 ## 🚀 Get started
 

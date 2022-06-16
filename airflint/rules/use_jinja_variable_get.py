@@ -4,10 +4,10 @@ import importlib
 from refactor import ReplacementAction, Rule
 from refactor.context import Ancestry, Scope
 
-from airflint.representatives import ImportFinder
+from airflint.representatives.import_finder import ImportFinder
 
 
-class ReplaceVariableGetByJinja(Rule):
+class UseJinjaVariableGet(Rule):
     """Replace `Variable.get("foo")` Calls through the jinja equivalent `{{ var.value.foo }}` if the variable is listed in `template_fields`."""
 
     context_providers = (Scope, Ancestry, ImportFinder)
@@ -38,16 +38,13 @@ class ReplaceVariableGetByJinja(Rule):
         try:
             _module = importlib.import_module(import_node.module)
         except ImportError:
-            pass
-        assert _module and (file_path := _module.__file__)
-        with open(file_path) as file:
+            return
+        with open(_module.__file__) as file:
             module = ast.parse(file.read())
         assert any(
-            isinstance(stmt, ast.Assign)
-            and any(
-                isinstance(target, ast.Name) and target.id == "template_fields"
-                for target in stmt.targets
-            )
+            isinstance(stmt, ast.AnnAssign)
+            and isinstance(stmt.target, ast.Name)
+            and stmt.target.id == "template_fields"
             and isinstance(stmt.value, ast.Tuple)
             and any(
                 isinstance(elt, ast.Constant) and elt.value == operator_keyword.arg

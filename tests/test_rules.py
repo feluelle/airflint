@@ -1,228 +1,46 @@
 import textwrap
 
-import pendulum
 import pytest
 from refactor import Session
 
-from airflint.rules import dag, task, variable
-
-yesterday = pendulum.today(tz=pendulum.UTC).subtract(days=1)
+from airflint.rules.use_function_level_imports import UseFunctionLevelImports
+from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
 
 
 @pytest.mark.parametrize(
-    "rules, source, expected",
+    "rule, source, expected",
     [
         (
-            dag.EnforceTaskFlowApi,
+            UseFunctionLevelImports,
             """
-            from airflow import DAG
+            import functools
+            import operator
+            import dataclass
 
-            with DAG(dag_id="foo") as dag:
-                pass
+            def something():
+                a = functools.reduce(x, y)
+                b = operator.add(a, a)
+                return b
+
+            def other_thing():
+                return dataclass(something(1, 2))
             """,
             """
-            from airflow import DAG
-            from airflow.decorators import dag
 
-            @dag(dag_id="foo")
-            def foo():
-                pass
-            foo()
+            def something():
+                import functools
+                import operator
+                a = functools.reduce(x, y)
+                b = operator.add(a, a)
+                return b
+
+            def other_thing():
+                import dataclass
+                return dataclass(something(1, 2))
             """,
         ),
         (
-            dag.EnforceTaskFlowApi,
-            """
-            from airflow import DAG
-
-            dag = DAG(dag_id="foo")
-            """,
-            """
-            from airflow import DAG
-
-            dag = DAG(dag_id="foo")
-            """,
-        ),
-        (
-            dag.EnforceStaticStartDate,
-            """
-            from airflow import DAG
-            from airflow.utils.dates import days_ago
-
-            with DAG(dag_id="foo", start_date=days_ago(1), schedule_interval="@daily") as dag:
-                pass
-            """,
-            f"""
-            from airflow import DAG
-            from airflow.utils.dates import days_ago
-            from pendulum import datetime
-
-            with DAG(dag_id="foo", start_date=datetime({yesterday.year}, {yesterday.month}, {yesterday.day}), schedule_interval="@daily") as dag:
-                pass
-            """,
-        ),
-        (
-            task.EnforceTaskFlowApi,
-            """
-            from airflow.operators.python import PythonOperator
-
-            def foo():
-                pass
-
-            PythonOperator(task_id="foo", python_callable=foo)
-            """,
-            """
-            from airflow.operators.python import PythonOperator
-            from airflow.decorators import task
-
-            @task(task_id="foo")
-            def foo():
-                pass
-
-            foo()
-            """,
-        ),
-        (
-            task.EnforceTaskFlowApi,
-            """
-            from airflow.operators.python import PythonOperator
-
-            def foo():
-                pass
-
-            task = PythonOperator(task_id="foo", python_callable=foo)
-            """,
-            """
-            from airflow.operators.python import PythonOperator
-
-            def foo():
-                pass
-
-            task = PythonOperator(task_id="foo", python_callable=foo)
-            """,
-        ),
-        (
-            task.EnforceTaskFlowApi,
-            """
-            from airflow.operators.python import PythonOperator
-
-            PythonOperator(task_id="foo", python_callable=lambda: "foo")
-            """,
-            """
-            from airflow.operators.python import PythonOperator
-            from airflow.decorators import task
-
-            PythonOperator(task_id="foo", python_callable=lambda: "foo")
-            """,
-        ),
-        (
-            task.EnforceTaskFlowApi,
-            """
-            from airflow.operators.python import PythonOperator
-
-            def foo():
-                pass
-
-            task_id = "foo"
-            PythonOperator(task_id=task_id, python_callable=foo)
-            """,
-            """
-            from airflow.operators.python import PythonOperator
-            from airflow.decorators import task
-
-            def foo():
-                pass
-
-            task_id = "foo"
-            PythonOperator(task_id=task_id, python_callable=foo)
-            """,
-        ),
-        (
-            task.EnforceTaskFlowApi,
-            """
-            from airflow.operators.python import PythonVirtualenvOperator
-
-            def foo():
-                pass
-
-            PythonVirtualenvOperator(task_id="foo", python_callable=foo)
-            """,
-            """
-            from airflow.operators.python import PythonVirtualenvOperator
-            from airflow.decorators import task
-
-            @task.virtualenv(task_id="foo")
-            def foo():
-                pass
-
-            foo()
-            """,
-        ),
-        (
-            task.EnforceTaskFlowApi,
-            """
-            from airflow.operators.python import PythonOperator
-
-            def foo():
-                pass
-
-            task_foo = PythonOperator(task_id="foo", python_callable=foo)
-            """,
-            """
-            from airflow.operators.python import PythonOperator
-            from airflow.decorators import task
-
-            @task(task_id="foo")
-            def foo():
-                pass
-
-            task_foo = foo()
-            """,
-        ),
-        (
-            task.EnforceTaskFlowApi,
-            """
-            from airflow.operators.python import PythonOperator
-
-            def foo(fizz, bar):
-                pass
-
-            task_foo = PythonOperator(task_id="foo", python_callable=foo, op_kwargs=dict(bar="bar"), op_args=["fizz"])
-            """,
-            """
-            from airflow.operators.python import PythonOperator
-            from airflow.decorators import task
-
-            @task(task_id="foo")
-            def foo(fizz, bar):
-                pass
-
-            task_foo = foo("fizz", bar="bar")
-            """,
-        ),
-        (
-            task.EnforceTaskFlowApi,
-            """
-            from airflow.operators.python import PythonOperator
-
-            def foo(fizz, bar):
-                pass
-
-            task_foo = PythonOperator(task_id="foo", python_callable=foo, op_kwargs={"bar":"bar"}, op_args=["fizz"])
-            """,
-            """
-            from airflow.operators.python import PythonOperator
-            from airflow.decorators import task
-
-            @task(task_id="foo")
-            def foo(fizz, bar):
-                pass
-
-            task_foo = foo("fizz", bar="bar")
-            """,
-        ),
-        (
-            [variable.ReplaceVariableGetByJinja],
+            UseJinjaVariableGet,
             """
             from airflow.models import Variable
             from airflow.operators.bash import BashOperator
@@ -238,9 +56,9 @@ yesterday = pendulum.today(tz=pendulum.UTC).subtract(days=1)
         ),
     ],
 )
-def test_rules(rules, source, expected):
+def test_rules(rule, source, expected):
     source = textwrap.dedent(source)
     expected = textwrap.dedent(expected)
 
-    session = Session(rules=rules)
+    session = Session(rules=[rule])
     assert session.run(source) == expected
