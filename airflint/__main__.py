@@ -1,15 +1,16 @@
 from refactor import run
 
-from airflint.rules import dag, task, variable
+from airflint.rules.use_function_level_imports import UseFunctionLevelImports
+from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
 
 
 def main():
-    rules = []
-    rules.extend(dag.EnforceStaticStartDate)
-    rules.extend(dag.EnforceTaskFlowApi)
-    rules.extend(task.EnforceTaskFlowApi)
-    rules.append(variable.ReplaceVariableGetByJinja)
-    run(rules=rules)
+    run(
+        rules=[
+            UseFunctionLevelImports,
+            UseJinjaVariableGet,
+        ],
+    )
 
 
 if __name__ == "__main__":
