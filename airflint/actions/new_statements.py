@@ -7,8 +7,8 @@ from refactor.ast import split_lines
 
 
 @dataclass
-class MoveStatementsAction(Action):
-    """Move statements from their old location to the node's location."""
+class NewStatementsAction(Action):
+    """Add new statements after the node's line."""
 
     statements: list[ast.stmt]
 
@@ -45,10 +45,6 @@ class MoveStatementsAction(Action):
         anchor = self.node.lineno - 1
         for line in reversed(replacement):
             lines.insert(anchor, line)
-
-        # We remove the old statements.
-        for line in split_lines(new_source):
-            lines.remove(line)
 
         # Finally we'll merge everything together!
         return lines.join()

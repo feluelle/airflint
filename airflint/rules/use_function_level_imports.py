@@ -4,7 +4,7 @@ import ast
 from refactor import Action, Rule, context
 from refactor.context import ScopeType
 
-from airflint.actions.move_statements import MoveStatementsAction
+from airflint.actions.new_statements import NewStatementsAction
 
 
 class UseFunctionLevelImports(Rule):
@@ -56,4 +56,4 @@ class UseFunctionLevelImports(Rule):
         # We'll select the first statement, which will act like an anchor to us
         # when we are inserting.
         first_stmt = node.body[0]
-        return MoveStatementsAction(first_stmt, inlined_imports)
+        return NewStatementsAction(first_stmt, inlined_imports)
