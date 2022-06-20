@@ -26,6 +26,9 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
                 return dataclass(something(1, 2))
             """,
             """
+            import functools
+            import operator
+            import dataclass
 
             def something():
                 import functools
