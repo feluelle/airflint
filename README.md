@@ -42,7 +42,7 @@ Alternatively you can add the following repo to your `pre-commit-config.yaml`:
 
 ```yaml
   - repo: https://github.com/feluelle/airflint
-    rev: v0.2.0-alpha
+    rev: v0.3.0-alpha
     hooks:
       - id: airflint
         args: ["-a"]  # Use -a for replacing inplace
