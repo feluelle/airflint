@@ -12,6 +12,7 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
     [
         (
             UseFunctionLevelImports,
+            # Test that all required imports within functions are being added to functions.
             """
             from functools import reduce
             from operator import add
@@ -44,6 +45,7 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
         ),
         (
             UseJinjaVariableGet,
+            # Test that direct assignment of Variable.get is being transformed to jinja equivalent.
             """
             from airflow.models import Variable
             from airflow.operators.bash import BashOperator
@@ -58,8 +60,8 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             """,
         ),
         (
+            UseJinjaVariableGet,
             # Test that nothing happens if it cannot import the module.
-            UseJinjaVariableGet,
             """
             from airflow.models import Variable
             from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
@@ -75,45 +77,85 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
         ),
         (
             UseJinjaVariableGet,
+            # Test that nothing happens if the import cannot be reached.
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
 
-            var = Variable.get("FOO")
+            def foo():
+                from airflow.operators.bash import BashOperator
 
-            BashOperator(task_id="foo", bash_command=var)
+            BashOperator(task_id="foo", bash_command=Variable.get("FOO"))
             """,
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
 
-            var = '{{ var.value.FOO }}'
+            def foo():
+                from airflow.operators.bash import BashOperator
 
-            BashOperator(task_id="foo", bash_command=var)
+            BashOperator(task_id="foo", bash_command=Variable.get("FOO"))
             """,
         ),
         (
+            UseJinjaVariableGet,
             # Test that nothing happens if it is not in template_fields.
-            UseJinjaVariableGet,
             """
             from airflow.models import Variable
             from airflow.operators.bash import BashOperator
 
-            var = Variable.get("FOO")
-
-            BashOperator(task_id="foo", output_encoding=var)
+            BashOperator(task_id="foo", output_encoding=Variable.get("FOO"))
             """,
             """
             from airflow.models import Variable
             from airflow.operators.bash import BashOperator
 
-            var = Variable.get("FOO")
-
-            BashOperator(task_id="foo", output_encoding=var)
+            BashOperator(task_id="foo", output_encoding=Variable.get("FOO"))
             """,
         ),
         (
             UseJinjaVariableGet,
+            # Test that variable assignment of Variable.get is being transformed to jinja equivalent.
+            """
+            from airflow.models import Variable
+            from airflow.operators.bash import BashOperator
+
+            var = Variable.get("FOO")
+
+            BashOperator(task_id="foo", bash_command=var)
+            """,
+            """
+            from airflow.models import Variable
+            from airflow.operators.bash import BashOperator
+
+            var = '{{ var.value.FOO }}'
+
+            BashOperator(task_id="foo", bash_command=var)
+            """,
+        ),
+        (
+            UseJinjaVariableGet,
+            # Test that nothing happens if the variable cannot be reached.
+            """
+            from airflow.models import Variable
+            from airflow.operators.bash import BashOperator
+
+            def foo():
+                var = Variable.get("FOO")
+
+            BashOperator(task_id="foo", bash_command=var)
+            """,
+            """
+            from airflow.models import Variable
+            from airflow.operators.bash import BashOperator
+
+            def foo():
+                var = Variable.get("FOO")
+
+            BashOperator(task_id="foo", bash_command=var)
+            """,
+        ),
+        (
+            UseJinjaVariableGet,
+            # Test that variable assignment works for multiple keywords.
             """
             from airflow.models import Variable
             from airflow.operators.bash import BashOperator
@@ -132,8 +174,8 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             """,
         ),
         (
+            UseJinjaVariableGet,
             # Test that nothing happens if at least one keyword is not in template_fields.
-            UseJinjaVariableGet,
             """
             from airflow.models import Variable
             from airflow.operators.bash import BashOperator
@@ -152,8 +194,8 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             """,
         ),
         (
-            # Test that nothing happens if variable is being referenced in multiple calls where at least one keyword is not in template_fields.
             UseJinjaVariableGet,
+            # Test that nothing happens if variable is being referenced in multiple Calls where at least one keyword is not in template_fields.
             """
             from airflow.models import Variable
             from airflow.operators.bash import BashOperator
@@ -175,6 +217,7 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
         ),
         (
             UseJinjaVariableGet,
+            # Test that variable assignment works for multiple Calls.
             """
             from airflow.models import Variable
             from airflow.operators.bash import BashOperator
@@ -196,6 +239,7 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
         ),
         (
             UseJinjaVariableGet,
+            # Test that Variable.get calls with deserialize_json works.
             """
             from airflow.models import Variable
             from airflow.operators.bash import BashOperator
@@ -211,6 +255,7 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
         ),
         (
             UseJinjaVariableGet,
+            # Test that Variable.get calls with default_var works.
             """
             from airflow.models import Variable
             from airflow.operators.bash import BashOperator
@@ -226,6 +271,7 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
         ),
         (
             UseJinjaVariableGet,
+            # Test that Variable.get calls with default_var=None works.
             """
             from airflow.models import Variable
             from airflow.operators.bash import BashOperator
@@ -241,6 +287,7 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
         ),
         (
             UseJinjaVariableGet,
+            # Test that Variable.get calls works with both - deserialize_json and default_var.
             """
             from airflow.models import Variable
             from airflow.operators.bash import BashOperator

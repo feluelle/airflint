@@ -3,35 +3,41 @@ from importlib import import_module
 from typing import Any
 
 from refactor import ReplacementAction, Rule
-from refactor.context import Ancestry
+from refactor.context import Ancestry, Scope
 
 
 class UseJinjaVariableGet(Rule):
     """Replace `Variable.get("foo")` Calls through the jinja equivalent `{{ var.value.foo }}` if the variable is listed in `template_fields`."""
 
-    context_providers = (Ancestry,)
+    context_providers = (Scope, Ancestry)
 
     def _get_operator_keywords(self, reference: ast.Call) -> list[ast.keyword]:
         parent = self.context["ancestry"].get_parent(reference)
 
         if isinstance(parent, ast.Assign):
             # Get all operator keywords referencing the variable, Variable.get call was assigned to.
-            return [
+            scope = self.context["scope"]
+            operator_keywords = [
                 node
                 for node in ast.walk(self.context.tree)
                 if isinstance(node, ast.keyword)
                 and isinstance(node.value, ast.Name)
                 and any(
                     node.value.id == target.id
+                    and scope.resolve(node.value).can_reach(scope.resolve(target))
                     for target in parent.targets
                     if isinstance(target, ast.Name)
                 )
             ]
-        elif isinstance(parent, ast.keyword):
+            if operator_keywords:
+                return operator_keywords
+            raise AssertionError("No operator keywords found. Skipping..")
+
+        if isinstance(parent, ast.keyword):
             # Direct reference without variable assignment.
             return [parent]
-        else:
-            raise AssertionError("Not implemented. Skipping..")
+
+        raise AssertionError("Not implemented. Skipping..")
 
     def _lookup_template_fields(self, keyword: ast.keyword) -> None:
         parent = self.context["ancestry"].get_parent(keyword)
@@ -39,12 +45,17 @@ class UseJinjaVariableGet(Rule):
         # Find the import node module matching the operator calls name.
         assert isinstance(operator_call := parent, ast.Call)
         assert isinstance(operator_call.func, ast.Name)
-        import_node = next(
-            node
-            for node in ast.walk(self.context.tree)
-            if isinstance(node, ast.ImportFrom)
-            and any(alias.name == operator_call.func.id for alias in node.names)
-        )
+        scope = self.context["scope"].resolve(operator_call.func)
+        try:
+            import_node = next(
+                node
+                for node in ast.walk(self.context.tree)
+                if isinstance(node, ast.ImportFrom)
+                and any(alias.name == operator_call.func.id for alias in node.names)
+                and scope.can_reach(self.context["scope"].resolve(node))
+            )
+        except StopIteration:
+            raise AssertionError("Could not find import definition. Skipping..")
         assert (module_name := import_node.module)
 
         # Try to import the module into python.
