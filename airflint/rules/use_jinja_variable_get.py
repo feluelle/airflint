@@ -37,7 +37,7 @@ class UseJinjaVariableGet(Rule):
             # Direct reference without variable assignment.
             return [parent]
 
-        raise AssertionError("Not implemented. Skipping..")
+        raise AssertionError(f"Unsupported parent type {type(parent)}. Skipping..")
 
     def _lookup_template_fields(self, keyword: ast.keyword) -> None:
         parent = self.context["ancestry"].get_parent(keyword)

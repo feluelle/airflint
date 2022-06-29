@@ -239,6 +239,22 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
         ),
         (
             UseJinjaVariableGet,
+            # Test that nothing happens if the type of Variable.get Calls parent is not implemented e.g. function call
+            """
+            from airflow.models import Variable
+            from airflow.operators.bash import BashOperator
+
+            BashOperator(task_id="foo", output_encoding=str(Variable.get("FOO")))
+            """,
+            """
+            from airflow.models import Variable
+            from airflow.operators.bash import BashOperator
+
+            BashOperator(task_id="foo", output_encoding=str(Variable.get("FOO")))
+            """,
+        ),
+        (
+            UseJinjaVariableGet,
             # Test that Variable.get calls with deserialize_json works.
             """
             from airflow.models import Variable
