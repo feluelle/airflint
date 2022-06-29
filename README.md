@@ -30,6 +30,8 @@ To install it from [PyPI](https://pypi.org/) run:
 pip install airflint
 ```
 
+> **_NOTE:_** It is recommended to install airflint into your existing airflow environment with all your providers included. This way `UseJinjaVariableGet` rule can detect all `template_fields` and airflint works as expected.
+
 Then just call it like this:
 
 ![usage](assets/images/usage.png)
@@ -44,6 +46,9 @@ Alternatively you can add the following repo to your `pre-commit-config.yaml`:
     hooks:
       - id: airflint
         args: ["-a"]  # Use -a for replacing inplace
+        additional_dependencies:  # Add all package dependencies you have in your dags, preferable with version spec
+          - apache-airflow
+          - apache-airflow-providers-cncf-kubernetes
 ```
 
 To complete the `UseFunctionlevelImports` rule, please add the `autoflake` hook after the `airflint` hook, as below:

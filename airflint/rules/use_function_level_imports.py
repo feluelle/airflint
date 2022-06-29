@@ -44,7 +44,7 @@ class UseFunctionLevelImports(Rule):
             imports = [
                 definition
                 for definition in definitions
-                if isinstance(definition, ast.Import)
+                if isinstance(definition, (ast.Import, ast.ImportFrom))
             ]
             # And we'll ensure this import is originating from the global scope.
             if imports and scope.scope_type is ScopeType.GLOBAL:
