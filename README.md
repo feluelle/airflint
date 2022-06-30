@@ -11,6 +11,8 @@
 
 > Enforce Best Practices for all your Airflow DAGs. ⭐
 
+⚠️ **airflint is still in alpha stage and has not been tested with real world Airflow DAGs. Please report any issues you face via [GitHub Issues](https://github.com/feluelle/airflint/issues), thank you. 🙏**
+
 ## 🧑‍🏫 Rules
 
 - [x] Use function-level imports instead of top-level imports[^1][^2] (see [Top level Python Code](https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html#top-level-python-code))
@@ -45,7 +47,7 @@ Alternatively you can add the following repo to your `pre-commit-config.yaml`:
     rev: v0.3.0-alpha
     hooks:
       - id: airflint
-        args: ["-a"]  # Use -a for replacing inplace
+        args: ["-a"]  # Use -a for apply the suggestions
         additional_dependencies:  # Add all package dependencies you have in your dags, preferable with version spec
           - apache-airflow
           - apache-airflow-providers-cncf-kubernetes
@@ -62,3 +64,15 @@ To complete the `UseFunctionlevelImports` rule, please add the `autoflake` hook 
 ```
 
 This will remove unused imports.
+
+## ❤️ Contributing
+
+I am looking for contributors who are interested in..
+
+* testing airflint with real world Airflow DAGs and reporting issues as soon as they face them
+* optimizing the ast traversing for existing rules
+* adding new rules based on best practices or bottlenecks you have experienced during Airflow DAGs authoring
+* documenting about what is being supported in particular by each rule
+* defining supported airflow versions i.e. some rules are bound to specific Airflow features and version
+
+For questions, please don't hesitate to open a GitHub issue.
