@@ -44,10 +44,10 @@ Alternatively you can add the following repo to your `pre-commit-config.yaml`:
 
 ```yaml
   - repo: https://github.com/feluelle/airflint
-    rev: v0.3.0-alpha
+    rev: v0.3.1-alpha
     hooks:
       - id: airflint
-        args: ["-a"]  # Use -a for apply the suggestions
+        args: ["-a"]  # Use -a to apply the suggestions
         additional_dependencies:  # Add all package dependencies you have in your dags, preferable with version spec
           - apache-airflow
           - apache-airflow-providers-cncf-kubernetes
@@ -69,10 +69,10 @@ This will remove unused imports.
 
 I am looking for contributors who are interested in..
 
-* testing airflint with real world Airflow DAGs and reporting issues as soon as they face them
-* optimizing the ast traversing for existing rules
-* adding new rules based on best practices or bottlenecks you have experienced during Airflow DAGs authoring
-* documenting about what is being supported in particular by each rule
-* defining supported airflow versions i.e. some rules are bound to specific Airflow features and version
+- testing airflint with real world Airflow DAGs and reporting issues as soon as they face them
+- optimizing the ast traversing for existing rules
+- adding new rules based on best practices or bottlenecks you have experienced during Airflow DAGs authoring
+- documenting about what is being supported in particular by each rule
+- defining supported airflow versions i.e. some rules are bound to specific Airflow features and version
 
 For questions, please don't hesitate to open a GitHub issue.
