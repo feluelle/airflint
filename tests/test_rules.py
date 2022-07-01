@@ -44,6 +44,83 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             """,
         ),
         (
+            UseFunctionLevelImports,
+            # Test that it skips the dag decoratored functions.
+            """
+            from airflow.decorators import dag, task
+            from operator import add
+
+            @dag()
+            def my_dag():
+                @task()
+                def my_task():
+                    add(1, 2)
+            """,
+            """
+            from airflow.decorators import dag, task
+            from operator import add
+
+            @dag()
+            def my_dag():
+                @task()
+                def my_task():
+                    from operator import add
+                    add(1, 2)
+            """,
+        ),
+        (
+            UseFunctionLevelImports,
+            # Test that it only adds unique imports i.e. only once
+            """
+            from airflow.decorators import dag, task
+            from operator import add
+
+            @dag()
+            def my_dag():
+                @task()
+                def my_task():
+                    add(1, 2)
+                    add(1, 2)
+            """,
+            """
+            from airflow.decorators import dag, task
+            from operator import add
+
+            @dag()
+            def my_dag():
+                @task()
+                def my_task():
+                    from operator import add
+                    add(1, 2)
+                    add(1, 2)
+            """,
+        ),
+        (
+            UseFunctionLevelImports,
+            # Test that it ignores imports for function decorators.
+            """
+            import random
+            from airflow import DAG
+            from airflow.decorators import task
+
+            with DAG() as dag:
+                @task.branch()
+                def random_choice():
+                    return random.choice(['task_1', 'task_2'])
+            """,
+            """
+            import random
+            from airflow import DAG
+            from airflow.decorators import task
+
+            with DAG() as dag:
+                @task.branch()
+                def random_choice():
+                    import random
+                    return random.choice(['task_1', 'task_2'])
+            """,
+        ),
+        (
             UseJinjaVariableGet,
             # Test that direct assignment of Variable.get is being transformed to jinja equivalent.
             """
