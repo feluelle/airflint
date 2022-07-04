@@ -69,9 +69,15 @@ class UseJinjaVariableGet(Rule):
         with open(file_path) as file:
             module = ast.parse(file.read())
         assert any(
-            isinstance(stmt, ast.AnnAssign)
-            and isinstance(stmt.target, ast.Name)
-            and stmt.target.id == "template_fields"
+            (
+                # E.g. <name>: Any = (..., )
+                isinstance(stmt, ast.AnnAssign)
+                and isinstance(target := stmt.target, ast.Name)
+                # E.g. <name> = (..., )
+                or isinstance(stmt, ast.Assign)
+                and isinstance(target := stmt.targets[0], ast.Name)
+            )
+            and target.id == "template_fields"
             and isinstance(stmt.value, ast.Tuple)
             and any(
                 isinstance(elt, ast.Constant) and elt.value == keyword.arg
