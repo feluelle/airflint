@@ -24,6 +24,15 @@
 
 _based on official [Best Practices](https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html)_
 
+## Requirements
+
+airflint is tested with:
+
+|                | Main version (dev)               | Released version (0.3.1-alpha) |
+|----------------|----------------------------------|--------------------------------|
+| Python         | 3.9, 3.10, 3.11.0-alpha - 3.11.0 | 3.9, 3.10                      |
+| Apache Airflow | >= 2.0.0                         | >= 2.3.0                       |
+
 ## 🚀 Get started
 
 To install it from [PyPI](https://pypi.org/) run:
