@@ -13,6 +13,7 @@ airflint = "airflint.__main__:main"
 [tool.poetry.dependencies]
 python = "^3.9"
 refactor = "^0.4.3"
+pyjwt = "~>2.4.0"  # To fix a security vulnerability, see https://github.com/feluelle/airflint/security/dependabot/3 for more information
 
 [tool.poetry.dev-dependencies]
 apache-airflow = "^2.2.5"
