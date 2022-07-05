@@ -28,10 +28,10 @@ _based on official [Best Practices](https://airflow.apache.org/docs/apache-airfl
 
 airflint is tested with:
 
-|                | Main version (dev)               | Released version (0.3.1-alpha) |
+|                | Main version (dev)               | Released version (0.3.2-alpha) |
 |----------------|----------------------------------|--------------------------------|
 | Python         | 3.9, 3.10, 3.11.0-alpha - 3.11.0 | 3.9, 3.10                      |
-| Apache Airflow | >= 2.0.0                         | >= 2.3.0                       |
+| Apache Airflow | >= 2.0.0                         | >= 2.0.0                       |
 
 ## 🚀 Get started
 
@@ -53,7 +53,7 @@ Alternatively you can add the following repo to your `pre-commit-config.yaml`:
 
 ```yaml
   - repo: https://github.com/feluelle/airflint
-    rev: v0.3.1-alpha
+    rev: v0.3.2-alpha
     hooks:
       - id: airflint
         args: ["-a"]  # Use -a to apply the suggestions
