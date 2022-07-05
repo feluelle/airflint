@@ -10,9 +10,8 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
 @pytest.mark.parametrize(
     "rule, source, expected",
     [
-        (
+        pytest.param(
             UseFunctionLevelImports,
-            # Test that all required imports within functions are being added to functions.
             """
             from functools import reduce
             from operator import add
@@ -42,10 +41,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
                 import dataclass
                 return dataclass(something(1, 2))
             """,
+            id="UseFunctionLevelImports | SUCCESS | general",
         ),
-        (
+        pytest.param(
             UseFunctionLevelImports,
-            # Test that it skips the dag decoratored functions.
             """
             from airflow.decorators import dag, task
             from operator import add
@@ -67,10 +66,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
                     from operator import add
                     add(1, 2)
             """,
+            id="UseFunctionLevelImports | SKIP | dag decorator",
         ),
-        (
+        pytest.param(
             UseFunctionLevelImports,
-            # Test that it only adds unique imports i.e. only once
             """
             from airflow.decorators import dag, task
             from operator import add
@@ -94,10 +93,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
                     add(1, 2)
                     add(1, 2)
             """,
+            id="UseFunctionLevelImports | SUCCESS | unique",
         ),
-        (
+        pytest.param(
             UseFunctionLevelImports,
-            # Test that it ignores imports for function decorators.
             """
             import random
             from airflow import DAG
@@ -119,10 +118,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
                     import random
                     return random.choice(['task_1', 'task_2'])
             """,
+            id="UseFunctionLevelImports | SKIP | function decorators",
         ),
-        (
+        pytest.param(
             UseJinjaVariableGet,
-            # Test that direct assignment of Variable.get is being transformed to jinja equivalent.
             """
             from airflow.models import Variable
             from operators.fake import FakeOperator
@@ -135,10 +134,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
 
             FakeOperator(task_id="fake", foo='{{ var.value.FOO }}')
             """,
+            id="UseJinjaVariableGet | SUCCESS | direct assignment with key",
         ),
-        (
+        pytest.param(
             UseJinjaVariableGet,
-            # Test that nothing happens if it cannot import the module.
             """
             from airflow.models import Variable
             from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
@@ -151,10 +150,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
 
             KubernetesPodOperator(task_id="fake", image=Variable.get("FOO"))
             """,
+            id="UseJinjaVariableGet | SKIP | cannot import module",
         ),
-        (
+        pytest.param(
             UseJinjaVariableGet,
-            # Test that nothing happens if the import cannot be reached.
             """
             from airflow.models import Variable
 
@@ -171,10 +170,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
 
             FakeOperator(task_id="fake", foo=Variable.get("FOO"))
             """,
+            id="UseJinjaVariableGet | SKIP | cannot reach import",
         ),
-        (
+        pytest.param(
             UseJinjaVariableGet,
-            # Test that nothing happens if it is not in template_fields.
             """
             from airflow.models import Variable
             from operators.fake import FakeOperator
@@ -187,10 +186,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
 
             FakeOperator(task_id="fake", fizz=Variable.get("FOO"))
             """,
+            id="UseJinjaVariableGet | SKIP | keyword not in template_fields",
         ),
-        (
+        pytest.param(
             UseJinjaVariableGet,
-            # Test that variable assignment of Variable.get is being transformed to jinja equivalent.
             """
             from airflow.models import Variable
             from operators.fake import FakeOperator
@@ -207,10 +206,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
 
             FakeOperator(task_id="fake", foo=var)
             """,
+            id="UseJinjaVariableGet | SUCCESS | variable assignment",
         ),
-        (
+        pytest.param(
             UseJinjaVariableGet,
-            # Test that nothing happens if the variable cannot be reached.
             """
             from airflow.models import Variable
             from operators.fake import FakeOperator
@@ -229,10 +228,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
 
             FakeOperator(task_id="fake", foo=var)
             """,
+            id="UseJinjaVariableGet | SKIP | cannot reach variable",
         ),
-        (
+        pytest.param(
             UseJinjaVariableGet,
-            # Test that variable assignment works for multiple keywords.
             """
             from airflow.models import Variable
             from operators.fake import FakeOperator
@@ -249,10 +248,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
 
             FakeOperator(task_id="fake", foo=var, bar=var)
             """,
+            id="UseJinjaVariableGet | SUCCESS | variable assignment with multiple keywords",
         ),
-        (
+        pytest.param(
             UseJinjaVariableGet,
-            # Test that nothing happens if at least one keyword is not in template_fields.
             """
             from airflow.models import Variable
             from operators.fake import FakeOperator
@@ -269,10 +268,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
 
             FakeOperator(task_id="fake", foo=var, fizz=var)
             """,
+            id="UseJinjaVariableGet | SKIP | variable assignment at least one keyword not in template_fields",
         ),
-        (
+        pytest.param(
             UseJinjaVariableGet,
-            # Test that nothing happens if variable is being referenced in multiple Calls where at least one keyword is not in template_fields.
             """
             from airflow.models import Variable
             from operators.fake import FakeOperator
@@ -291,10 +290,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             FakeOperator(task_id="fake", foo=var)
             FakeOperator(task_id="fake2", fizz=var)
             """,
+            id="UseJinjaVariableGet | SKIP | variable assignment for multiple calls where at least one keyword is not in template_fields",
         ),
-        (
+        pytest.param(
             UseJinjaVariableGet,
-            # Test that variable assignment works for multiple Calls.
             """
             from airflow.models import Variable
             from operators.fake import FakeOperator
@@ -313,10 +312,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             FakeOperator(task_id="fake", foo=var)
             FakeOperator(task_id="fake2", foo=var)
             """,
+            id="UseJinjaVariableGet | SUCCESS | variable assignment for multiple calls",
         ),
-        (
+        pytest.param(
             UseJinjaVariableGet,
-            # Test that nothing happens if the type of Variable.get Calls parent is not implemented e.g. function call
             """
             from airflow.models import Variable
             from operators.fake import FakeOperator
@@ -329,10 +328,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
 
             FakeOperator(task_id="fake", fizz=str(Variable.get("FOO")))
             """,
+            id="UseJinjaVariableGet | SKIP | direct assignment with unimplemented parent type",
         ),
-        (
+        pytest.param(
             UseJinjaVariableGet,
-            # Test that Variable.get calls with deserialize_json works.
             """
             from airflow.models import Variable
             from operators.fake import FakeOperator
@@ -345,10 +344,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
 
             FakeOperator(task_id="fake", foo='{{ var.json.FOO }}')
             """,
+            id="UseJinjaVariableGet | SUCCESS | direct assignment with key and deserialize_json keyword",
         ),
-        (
+        pytest.param(
             UseJinjaVariableGet,
-            # Test that Variable.get calls with default_var works.
             """
             from airflow.models import Variable
             from operators.fake import FakeOperator
@@ -361,10 +360,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
 
             FakeOperator(task_id="fake", foo="{{ var.value.get('FOO', 'BAR') }}")
             """,
+            id="UseJinjaVariableGet | SUCCESS | direct assignment with key and default_var keyword",
         ),
-        (
+        pytest.param(
             UseJinjaVariableGet,
-            # Test that Variable.get calls with default_var=None works.
             """
             from airflow.models import Variable
             from operators.fake import FakeOperator
@@ -377,10 +376,10 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
 
             FakeOperator(task_id="fake", foo="{{ var.value.get('FOO', None) }}")
             """,
+            id="UseJinjaVariableGet | SUCCESS | direct assignment with key and default_var=None keyword",
         ),
-        (
+        pytest.param(
             UseJinjaVariableGet,
-            # Test that Variable.get calls works with both - deserialize_json and default_var.
             """
             from airflow.models import Variable
             from operators.fake import FakeOperator
@@ -393,6 +392,7 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
 
             FakeOperator(task_id="fake", foo="{{ var.json.get('FOO', 'BAR') }}")
             """,
+            id="UseJinjaVariableGet | SUCCESS | direct assignment with key, deserialize_json and default_var keywords",
         ),
     ],
 )
