@@ -152,4 +152,5 @@ cython_debug/
 #.idea/
 
 # Example dags for testing
-example_dags/
+example_dags/*
+!.gitkeep
