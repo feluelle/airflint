@@ -12,7 +12,7 @@ airflint = "airflint.__main__:main"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-refactor = "^0.4.3"
+refactor = "^0.4.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.1"

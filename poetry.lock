@@ -130,7 +130,7 @@ testing = ["fields", "hunter", "process-tests", "six", "pytest-xdist", "virtuale
 
 [[package]]
 name = "refactor"
-version = "0.4.3"
+version = "0.4.4"
 description = "AST-based fragmental source code refactoring toolkit"
 category = "main"
 optional = false
@@ -147,7 +147,7 @@ python-versions = ">=3.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "87433eb2aa810fdea3925793d4d82cdec65f93a36ea0e25a88a736133d89f764"
+content-hash = "7c0b92ffea369b794d73642f3cd171d96fa8f0686929f8e39ba4e733370911bc"
 
 [metadata.files]
 atomicwrites = [
@@ -234,8 +234,8 @@ pytest-cov = [
     {file = "pytest_cov-3.0.0-py3-none-any.whl", hash = "sha256:578d5d15ac4a25e5f961c938b85a05b09fdaae9deef3bb6de9a6e766622ca7a6"},
 ]
 refactor = [
-    {file = "refactor-0.4.3-py3-none-any.whl", hash = "sha256:4d57da10b4c5a45ac169b946e5103cb4f44eda39516566b2f38e672c513e4052"},
-    {file = "refactor-0.4.3.tar.gz", hash = "sha256:e259f192ed2e60bce31a2f968e3c7f8d47bc8c700ba15691399a181db6fe3e5c"},
+    {file = "refactor-0.4.4-py3-none-any.whl", hash = "sha256:87cd9d001d96420651b0e53e6f9a334e840e3d82a58b53da410e84a9c25d4e74"},
+    {file = "refactor-0.4.4.tar.gz", hash = "sha256:3761ba8a422f82df9032b4e0dad5113487168dd7a28ce68c13642f81d548495b"},
 ]
 tomli = [
     {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
