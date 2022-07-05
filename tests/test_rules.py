@@ -125,15 +125,15 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             # Test that direct assignment of Variable.get is being transformed to jinja equivalent.
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
-            BashOperator(task_id="foo", bash_command=Variable.get("FOO"))
+            FakeOperator(task_id="fake", foo=Variable.get("FOO"))
             """,
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
-            BashOperator(task_id="foo", bash_command='{{ var.value.FOO }}')
+            FakeOperator(task_id="fake", foo='{{ var.value.FOO }}')
             """,
         ),
         (
@@ -143,13 +143,13 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             from airflow.models import Variable
             from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
 
-            KubernetesPodOperator(task_id="foo", bash_command=Variable.get("FOO"))
+            KubernetesPodOperator(task_id="fake", image=Variable.get("FOO"))
             """,
             """
             from airflow.models import Variable
             from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
 
-            KubernetesPodOperator(task_id="foo", bash_command=Variable.get("FOO"))
+            KubernetesPodOperator(task_id="fake", image=Variable.get("FOO"))
             """,
         ),
         (
@@ -159,17 +159,17 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             from airflow.models import Variable
 
             def foo():
-                from airflow.operators.bash import BashOperator
+                from operators.fake import FakeOperator
 
-            BashOperator(task_id="foo", bash_command=Variable.get("FOO"))
+            FakeOperator(task_id="fake", foo=Variable.get("FOO"))
             """,
             """
             from airflow.models import Variable
 
             def foo():
-                from airflow.operators.bash import BashOperator
+                from operators.fake import FakeOperator
 
-            BashOperator(task_id="foo", bash_command=Variable.get("FOO"))
+            FakeOperator(task_id="fake", foo=Variable.get("FOO"))
             """,
         ),
         (
@@ -177,15 +177,15 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             # Test that nothing happens if it is not in template_fields.
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
-            BashOperator(task_id="foo", output_encoding=Variable.get("FOO"))
+            FakeOperator(task_id="fake", fizz=Variable.get("FOO"))
             """,
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
-            BashOperator(task_id="foo", output_encoding=Variable.get("FOO"))
+            FakeOperator(task_id="fake", fizz=Variable.get("FOO"))
             """,
         ),
         (
@@ -193,19 +193,19 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             # Test that variable assignment of Variable.get is being transformed to jinja equivalent.
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
             var = Variable.get("FOO")
 
-            BashOperator(task_id="foo", bash_command=var)
+            FakeOperator(task_id="fake", foo=var)
             """,
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
             var = '{{ var.value.FOO }}'
 
-            BashOperator(task_id="foo", bash_command=var)
+            FakeOperator(task_id="fake", foo=var)
             """,
         ),
         (
@@ -213,21 +213,21 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             # Test that nothing happens if the variable cannot be reached.
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
             def foo():
                 var = Variable.get("FOO")
 
-            BashOperator(task_id="foo", bash_command=var)
+            FakeOperator(task_id="fake", foo=var)
             """,
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
             def foo():
                 var = Variable.get("FOO")
 
-            BashOperator(task_id="foo", bash_command=var)
+            FakeOperator(task_id="fake", foo=var)
             """,
         ),
         (
@@ -235,19 +235,19 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             # Test that variable assignment works for multiple keywords.
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
             var = Variable.get("FOO")
 
-            BashOperator(task_id="foo", bash_command=var, env=var)
+            FakeOperator(task_id="fake", foo=var, bar=var)
             """,
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
             var = '{{ var.value.FOO }}'
 
-            BashOperator(task_id="foo", bash_command=var, env=var)
+            FakeOperator(task_id="fake", foo=var, bar=var)
             """,
         ),
         (
@@ -255,19 +255,19 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             # Test that nothing happens if at least one keyword is not in template_fields.
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
             var = Variable.get("FOO")
 
-            BashOperator(task_id="foo", bash_command=var, output_encoding=var)
+            FakeOperator(task_id="fake", foo=var, fizz=var)
             """,
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
             var = Variable.get("FOO")
 
-            BashOperator(task_id="foo", bash_command=var, output_encoding=var)
+            FakeOperator(task_id="fake", foo=var, fizz=var)
             """,
         ),
         (
@@ -275,21 +275,21 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             # Test that nothing happens if variable is being referenced in multiple Calls where at least one keyword is not in template_fields.
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
             var = Variable.get("FOO")
 
-            BashOperator(task_id="foo", bash_command=var)
-            BashOperator(task_id="bar", output_encoding=var)
+            FakeOperator(task_id="fake", foo=var)
+            FakeOperator(task_id="fake2", fizz=var)
             """,
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
             var = Variable.get("FOO")
 
-            BashOperator(task_id="foo", bash_command=var)
-            BashOperator(task_id="bar", output_encoding=var)
+            FakeOperator(task_id="fake", foo=var)
+            FakeOperator(task_id="fake2", fizz=var)
             """,
         ),
         (
@@ -297,21 +297,21 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             # Test that variable assignment works for multiple Calls.
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
             var = Variable.get("FOO")
 
-            BashOperator(task_id="foo", bash_command=var)
-            BashOperator(task_id="bar", bash_command=var)
+            FakeOperator(task_id="fake", foo=var)
+            FakeOperator(task_id="fake2", foo=var)
             """,
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
             var = '{{ var.value.FOO }}'
 
-            BashOperator(task_id="foo", bash_command=var)
-            BashOperator(task_id="bar", bash_command=var)
+            FakeOperator(task_id="fake", foo=var)
+            FakeOperator(task_id="fake2", foo=var)
             """,
         ),
         (
@@ -319,15 +319,15 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             # Test that nothing happens if the type of Variable.get Calls parent is not implemented e.g. function call
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
-            BashOperator(task_id="foo", output_encoding=str(Variable.get("FOO")))
+            FakeOperator(task_id="fake", fizz=str(Variable.get("FOO")))
             """,
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
-            BashOperator(task_id="foo", output_encoding=str(Variable.get("FOO")))
+            FakeOperator(task_id="fake", fizz=str(Variable.get("FOO")))
             """,
         ),
         (
@@ -335,15 +335,15 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             # Test that Variable.get calls with deserialize_json works.
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
-            BashOperator(task_id="foo", bash_command=Variable.get("FOO", deserialize_json=True))
+            FakeOperator(task_id="fake", foo=Variable.get("FOO", deserialize_json=True))
             """,
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
-            BashOperator(task_id="foo", bash_command='{{ var.json.FOO }}')
+            FakeOperator(task_id="fake", foo='{{ var.json.FOO }}')
             """,
         ),
         (
@@ -351,15 +351,15 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             # Test that Variable.get calls with default_var works.
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
-            BashOperator(task_id="foo", bash_command=Variable.get("FOO", default_var="BAR"))
+            FakeOperator(task_id="fake", foo=Variable.get("FOO", default_var="BAR"))
             """,
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
-            BashOperator(task_id="foo", bash_command="{{ var.value.get('FOO', 'BAR') }}")
+            FakeOperator(task_id="fake", foo="{{ var.value.get('FOO', 'BAR') }}")
             """,
         ),
         (
@@ -367,15 +367,15 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             # Test that Variable.get calls with default_var=None works.
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
-            BashOperator(task_id="foo", bash_command=Variable.get("FOO", default_var=None))
+            FakeOperator(task_id="fake", foo=Variable.get("FOO", default_var=None))
             """,
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
-            BashOperator(task_id="foo", bash_command="{{ var.value.get('FOO', None) }}")
+            FakeOperator(task_id="fake", foo="{{ var.value.get('FOO', None) }}")
             """,
         ),
         (
@@ -383,15 +383,15 @@ from airflint.rules.use_jinja_variable_get import UseJinjaVariableGet
             # Test that Variable.get calls works with both - deserialize_json and default_var.
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
-            BashOperator(task_id="foo", bash_command=Variable.get("FOO", deserialize_json=True, default_var="BAR"))
+            FakeOperator(task_id="fake", foo=Variable.get("FOO", deserialize_json=True, default_var="BAR"))
             """,
             """
             from airflow.models import Variable
-            from airflow.operators.bash import BashOperator
+            from operators.fake import FakeOperator
 
-            BashOperator(task_id="foo", bash_command="{{ var.json.get('FOO', 'BAR') }}")
+            FakeOperator(task_id="fake", foo="{{ var.json.get('FOO', 'BAR') }}")
             """,
         ),
     ],
