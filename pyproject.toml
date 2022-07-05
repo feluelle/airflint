@@ -16,7 +16,7 @@ refactor = "^0.4.3"
 pyjwt = "~>2.4.0"  # To fix a security vulnerability, see https://github.com/feluelle/airflint/security/dependabot/3 for more information
 
 [tool.poetry.dev-dependencies]
-apache-airflow = "^2.2.5"
+apache-airflow = "^2.0.0"
 pytest = "^7.1.1"
 pytest-cov = "^3.0.0"
 
