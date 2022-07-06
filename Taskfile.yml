@@ -1,0 +1,13 @@
+version: '3'
+
+tasks:
+  test:example_dags:
+    cmds:
+      - |
+        cd /tmp/airflow && git fetch || gh repo clone apache/airflow /tmp/airflow && cd /tmp/airflow
+        for tag in $(git tag -l "2\.[0-9]*\.[0-9]*"); do
+          git checkout $tag
+          airflint -a /tmp/airflow/airflow/example_dags/
+          autoflake --remove-all-unused-imports -r -i /tmp/airflow/airflow/example_dags/
+          git restore .
+        done
