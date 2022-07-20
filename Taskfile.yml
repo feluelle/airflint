@@ -1,0 +1,6 @@
+version: '3'
+
+tasks:
+  test:example_dags:
+    cmds:
+      - . dev/example_dags_tester.sh
