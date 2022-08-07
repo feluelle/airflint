@@ -2,12 +2,13 @@
 import ast
 from dataclasses import dataclass
 
-from refactor import Action, Context, common
+from refactor import Context, common
+from refactor.actions import LazyInsertAfter
 from refactor.ast import split_lines
 
 
 @dataclass
-class NewStatementsAction(Action):
+class NewStatementsAction(LazyInsertAfter):
     """Add new statements after the node's line."""
 
     statements: list[ast.stmt]
