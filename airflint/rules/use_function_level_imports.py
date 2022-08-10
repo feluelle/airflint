@@ -1,7 +1,8 @@
 # Credits go to GitHub user @isidentical who provided most of the solution.
 import ast
 
-from refactor import Action, Rule, context
+from refactor import Rule, context
+from refactor.actions import BaseAction
 from refactor.context import ScopeType
 
 from airflint.actions.new_statements import NewStatementsAction
@@ -12,7 +13,7 @@ class UseFunctionLevelImports(Rule):
 
     context_providers = (context.Scope,)
 
-    def match(self, node: ast.AST) -> Action:
+    def match(self, node: ast.AST) -> BaseAction:
         # Instead of going import -> function, we are going
         # function -> import since this way it is easier to
         # do the refactorings one by one and finally remove

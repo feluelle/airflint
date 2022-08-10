@@ -2,7 +2,8 @@ import ast
 from importlib import import_module
 from typing import Any
 
-from refactor import ReplacementAction, Rule
+from refactor import Rule
+from refactor.actions import Replace
 from refactor.context import Ancestry, Scope
 
 
@@ -145,7 +146,7 @@ class UseJinjaVariableGet(Rule):
         for operator_keyword in self._get_operator_keywords(reference=node):
             self._lookup_template_fields(keyword=operator_keyword)
 
-        return ReplacementAction(
+        return Replace(
             node,
             target=ast.Constant(value=self._construct_value(node)),
         )
