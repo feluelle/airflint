@@ -76,11 +76,11 @@ repos:
       - id: isort
         args: ["--profile", "black"]
   - repo: https://github.com/crate-ci/typos
-    rev: typos-dict-v0.9.7
+    rev: typos-dict-v0.9.8
     hooks:
       - id: typos
   - repo: https://github.com/pycqa/autoflake
-    rev: v1.7.6
+    rev: v1.7.7
     hooks:
       - id: autoflake
         args: ["--remove-all-unused-imports", "--in-place"]
