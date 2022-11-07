@@ -76,7 +76,7 @@ repos:
       - id: isort
         args: ["--profile", "black"]
   - repo: https://github.com/crate-ci/typos
-    rev: typos-dict-v0.9.9
+    rev: v1.12.14
     hooks:
       - id: typos
   - repo: https://github.com/pycqa/autoflake
