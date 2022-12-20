@@ -34,7 +34,7 @@ repos:
       - id: python-no-log-warn
       - id: python-use-type-annotations
   - repo: https://github.com/asottile/add-trailing-comma
-    rev: v2.3.0
+    rev: v2.4.0
     hooks:
       - id: add-trailing-comma
   - repo: https://github.com/asottile/pyupgrade
@@ -71,12 +71,12 @@ repos:
           - toml
         exclude: airflint/__main__.py|tests/
   - repo: https://github.com/pycqa/isort
-    rev: 5.10.1
+    rev: v5.11.3
     hooks:
       - id: isort
         args: ["--profile", "black"]
   - repo: https://github.com/crate-ci/typos
-    rev: typos-dict-v0.9.13
+    rev: v1.13.5
     hooks:
       - id: typos
   - repo: https://github.com/pycqa/autoflake
