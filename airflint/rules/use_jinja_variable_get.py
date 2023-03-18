@@ -76,7 +76,7 @@ class UseJinjaVariableGet(Rule):
                 and isinstance(target := stmt.target, ast.Name)
                 # E.g. <name> = (..., )
                 or isinstance(stmt, ast.Assign)
-                and isinstance(target := stmt.targets[0], ast.Name)
+                and isinstance(target := stmt.targets[0], ast.Name)  # type: ignore[assignment]
             )
             and target.id == "template_fields"
             and isinstance(stmt.value, ast.Tuple)
