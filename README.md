@@ -28,10 +28,10 @@ _based on official [Best Practices](https://airflow.apache.org/docs/apache-airfl
 
 airflint is tested with:
 
-|                | Main version (dev)               | Released version (0.3.2-alpha) |
-|----------------|----------------------------------|--------------------------------|
-| Python         | 3.9, 3.10, 3.11.0-alpha - 3.11.0 | 3.9, 3.10                      |
-| Apache Airflow | >= 2.0.0                         | >= 2.0.0                       |
+|                | Main version (dev)                     | Released version (0.3.2-alpha) |
+|----------------|----------------------------------------|--------------------------------|
+| Python         | 3.9, 3.10, 3.11, 3.12.0-alpha - 3.12.0 | 3.9, 3.10                      |
+| Apache Airflow | >= 2.0.0                               | >= 2.0.0                       |
 
 ## 🚀 Get started
 
