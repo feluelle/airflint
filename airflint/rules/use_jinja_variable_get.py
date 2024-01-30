@@ -56,14 +56,16 @@ class UseJinjaVariableGet(Rule):
                 and scope.can_reach(self.context["scope"].resolve(node))
             )
         except StopIteration:
-            raise AssertionError("Could not find import definition. Skipping..")
+            raise AssertionError(
+                "Could not find import definition. Skipping.."
+            ) from None
         assert (module_name := import_node.module)
 
         # Try to import the module into python.
         try:
             _module = import_module(module_name)
-        except ImportError:
-            raise AssertionError("Could not import module. Skipping..")
+        except ImportError as e:
+            raise AssertionError("Could not import module. Skipping..") from e
         assert (file_path := _module.__file__)
 
         # Parse the ast to check if the keyword is in template_fields.
