@@ -25,7 +25,7 @@ repos:
         additional_dependencies:
           - types-toml
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.0
+    rev: v0.8.1
     hooks:
       - id: ruff
         args:
@@ -33,7 +33,7 @@ repos:
         - --unsafe-fixes
       - id: ruff-format
   - repo: https://github.com/crate-ci/typos
-    rev: typos-dict-v0.11.35
+    rev: typos-dict-v0.11.37
     hooks:
       - id: typos
   - repo: local
